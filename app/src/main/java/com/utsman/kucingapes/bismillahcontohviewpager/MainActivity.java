@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -16,20 +17,74 @@ public class MainActivity extends AppCompatActivity {
 
     ViewPager viewPager;
     Adapter adapter;
+    Button btnPrev, btnNext;
+
+    /*asumsikan page default di halaman pertama*/
+    int page = 0; /*nilai 0 sama dengan satu*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        btnPrev = findViewById(R.id.prev);
+        btnNext = findViewById(R.id.next);
+
+        /*seting btn prev di awal dengan visible agar btn prev menghilang/disable*/
+        btnPrev.setVisibility(View.GONE);
+
         /*sekarang pasang adapter ke viewpager*/
         setupViewPager();
+
+        /*buat metode page change*/
+        pageChange();
+    }
+
+    private void pageChange() {
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                page = position;
+                switch (position) {
+                    case 0: /*titik dua*/
+                        btnPrev.setVisibility(View.GONE); /*di awal btnprev ngilang/ gak bisa dipencet*/
+                        btnNext.setVisibility(View.VISIBLE);
+                        break;
+                    case 1: /*halaman selanjutnya*/
+                        btnPrev.setVisibility(View.VISIBLE); /*halaman berikutnya btn prev nongol/ bisa dipencet*/
+                        btnNext.setVisibility(View.VISIBLE);
+                        break;
+                    case 2:
+                        btnPrev.setVisibility(View.VISIBLE);
+                        btnNext.setVisibility(View.GONE); /*halaman terkahir btnNext yg ngilang*/
+                        break;
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     private void setupViewPager() {
         adapter = new Adapter(this);
         viewPager = findViewById(R.id.viewpager);
         viewPager.setAdapter(adapter);
+    }
+
+    public void prev(View view) {
+        viewPager.setCurrentItem(viewPager.getCurrentItem() - 1, true);
+    }
+
+    public void next(View view) {
+        viewPager.setCurrentItem(viewPager.getCurrentItem() + 1, true);
     }
 
     private class Adapter extends PagerAdapter{
